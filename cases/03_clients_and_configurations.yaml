@@ -1,0 +1,148 @@
+version: 1
+suite: clients_and_configurations
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: GET-clients-findById-foreign
+    name: Read client not assigned to actor
+    category: horizontal_privilege
+    method: GET
+    path: /api/clients/findById/{{foreign_provider_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-clients-configurations-foreign
+    name: Read client configurations (foreign provider)
+    category: horizontal_privilege
+    method: GET
+    path: /api/clients/{{foreign_provider_id}}/configurations
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-clients-investors-foreign
+    name: Read client investors (foreign provider)
+    category: horizontal_privilege
+    method: GET
+    path: /api/clients/{{foreign_provider_id}}/investors
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-clients-search
+    name: Client search enumeration
+    category: enumeration
+    method: GET
+    path: /api/clients/search?draw=1&start=0&length=10
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+      must_remain: {}
+    expect_when_fixed:
+      status_in: [200]
+
+  - id: GET-configurations-getClientConfiguration-foreign
+    name: Read client configuration - foreign provider
+    category: horizontal_privilege
+    method: GET
+    path: /api/configurations/getClientConfiguration?client={{foreign_provider_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-configurations-getClientBaseRate-foreign
+    name: Read client base rate - foreign provider
+    category: horizontal_privilege
+    method: GET
+    path: /api/configurations/getClientBaseRate?client={{foreign_provider_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: PUT-configurations-provider-foreign
+    name: Update provider configuration (foreign)
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/provider
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-capacity-clients-investors-search-foreign
+    name: Capacity investor search - foreign provider
+    category: horizontal_privilege
+    method: GET
+    path: /api/capacities/{{foreign_provider_id}}/investors/search
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-capacity-pools-search-foreign
+    name: Capacity pools search - foreign client
+    category: horizontal_privilege
+    method: GET
+    path: /api/capacities/clients/{{foreign_provider_id}}/pools/search
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-obligors-active-client-foreign
+    name: Obligor active list - foreign client
+    category: horizontal_privilege
+    method: GET
+    path: /api/obligors/active/client/{{foreign_provider_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: POST-clients-investors
+    name: Create client investor (cross-tenant write)
+    category: horizontal_privilege
+    method: POST
+    path: /api/clients/investors
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      investor: "investor-probe@example.test"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: DELETE-obligors-id
+    name: Delete obligor as non-admin
+    category: vertical_privilege
+    method: DELETE
+    path: /api/obligors/{{foreign_provider_id}}
+    destructive: true
+    mutate: true
+    mark_vulnerable_if:
+      status_in: [200, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]

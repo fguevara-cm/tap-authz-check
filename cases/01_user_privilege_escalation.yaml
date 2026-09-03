@@ -1,0 +1,163 @@
+version: 1
+suite: user_privilege_escalation
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: PUT-user-isAdmin-escalation
+    name: Original PenTest PoC
+    category: vertical_privilege
+    method: PUT
+    path: /api/user
+    mutate: true
+    body:
+      id: "{{actor_email}}"
+      name: "{{actor_name}}"
+      status: ACT
+      isAdmin: true
+      hasAnalytics: true
+      onlyAnalyticsAccess: false
+      distributePaymentsAllowed: true
+      paymentInstructionsAllowed: true
+      clients: []
+      companyName: ""
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+    post_checks:
+      - method: GET
+        path: /api/user/me
+        assert_json:
+          isAdmin: false
+    cleanup:
+      strategy: restore_user_snapshot
+
+  - id: PUT-user-hasAnalytics
+    name: Self-elevation hasAnalytics flag
+    category: vertical_privilege
+    method: PUT
+    path: /api/user
+    mutate: true
+    body:
+      id: "{{actor_email}}"
+      name: "{{actor_name}}"
+      status: ACT
+      isAdmin: false
+      hasAnalytics: true
+      onlyAnalyticsAccess: false
+      distributePaymentsAllowed: false
+      paymentInstructionsAllowed: false
+      clients: []
+      companyName: ""
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-user-distributePaymentsAllowed
+    name: Self-elevation distributePaymentsAllowed flag
+    category: vertical_privilege
+    method: PUT
+    path: /api/user
+    mutate: true
+    body:
+      id: "{{actor_email}}"
+      name: "{{actor_name}}"
+      status: ACT
+      isAdmin: false
+      hasAnalytics: false
+      onlyAnalyticsAccess: false
+      distributePaymentsAllowed: true
+      paymentInstructionsAllowed: false
+      clients: []
+      companyName: ""
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-user-paymentInstructionsAllowed
+    name: Self-elevation paymentInstructionsAllowed flag
+    category: vertical_privilege
+    method: PUT
+    path: /api/user
+    mutate: true
+    body:
+      id: "{{actor_email}}"
+      name: "{{actor_name}}"
+      status: ACT
+      isAdmin: false
+      hasAnalytics: false
+      onlyAnalyticsAccess: false
+      distributePaymentsAllowed: false
+      paymentInstructionsAllowed: true
+      clients: []
+      companyName: ""
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-user-onlyAnalyticsAccess
+    name: Self-elevation onlyAnalyticsAccess flag
+    category: vertical_privilege
+    method: PUT
+    path: /api/user
+    mutate: true
+    body:
+      id: "{{actor_email}}"
+      name: "{{actor_name}}"
+      status: ACT
+      isAdmin: false
+      hasAnalytics: false
+      onlyAnalyticsAccess: true
+      distributePaymentsAllowed: false
+      paymentInstructionsAllowed: false
+      clients: []
+      companyName: ""
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-user-foreign-provider
+    name: Horizontal privilege - clients[] with foreign provider
+    category: horizontal_privilege
+    method: PUT
+    path: /api/user
+    mutate: true
+    body:
+      id: "{{actor_email}}"
+      name: "{{actor_name}}"
+      status: ACT
+      isAdmin: false
+      hasAnalytics: false
+      onlyAnalyticsAccess: false
+      distributePaymentsAllowed: false
+      paymentInstructionsAllowed: false
+      clients:
+        - client: "{{foreign_provider_id}}"
+          role: SER
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-user-other-account
+    name: Vertical privilege - body.id != actor
+    category: vertical_privilege
+    method: PUT
+    path: /api/user
+    mutate: true
+    body:
+      id: "{{victim_user_email}}"
+      isAdmin: true
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]

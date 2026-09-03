@@ -1,0 +1,119 @@
+version: 1
+suite: trades_invoices_settlements
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: POST-trade-tradeInvoices-owner
+    name: Trade tradeInvoices - foreign owner (horizontal)
+    category: trades
+    method: POST
+    path: /api/trade/tradeInvoices/{{foreign_provider_id}}
+    mutate: true
+    body:
+      ids: ["{{trade_id}}"]
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: PATCH-trade-accept-trade-id
+    name: Trade accept - foreign trade id
+    category: trades
+    method: PATCH
+    path: /api/trade/{{trade_id}}/accept
+    destructive: true
+    mutate: true
+    body: {}
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: POST-trade-processTrade-trade-id
+    name: Trade process trade - foreign trade id
+    category: trades
+    method: POST
+    path: /api/trade/processTrade/{{trade_id}}
+    destructive: true
+    mutate: true
+    body: {}
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-invoices-findById
+    name: Invoice findById - foreign invoice
+    category: invoices
+    method: GET
+    path: /api/invoices/findById/{{invoice_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-invoices-nonTraded-findById
+    name: Invoice nonTraded findById
+    category: invoices
+    method: GET
+    path: /api/invoices/nonTraded/findById/{{invoice_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: POST-invoices-findAllByIds
+    name: Invoice findAllByIds - batch probe
+    category: invoices
+    method: POST
+    path: /api/invoices/findAllByIds
+    mutate: true
+    body:
+      ids: ["{{invoice_id}}"]
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-invoices-voided
+    name: Invoice voided - destructive
+    category: invoices
+    method: POST
+    path: /api/invoices/{{invoice_id}}/voided
+    destructive: true
+    mutate: true
+    body:
+      reason: "authz probe"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-invoices-supporting-documents
+    name: Invoice supporting documents - foreign invoice
+    category: invoices
+    method: GET
+    path: /api/invoices/{{invoice_id}}/supporting-documents
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-investor-rest-findById
+    name: Investor findById - horizontal probe
+    category: investors
+    method: GET
+    path: /api/investor/{{victim_user_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]

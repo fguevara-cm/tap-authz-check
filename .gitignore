@@ -1,0 +1,36 @@
+venv/
+.venv/
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+reports/*
+!reports/.gitkeep
+
+fixtures/*.yaml
+!fixtures/mirror.example.yaml
+!fixtures/README.md
+
+.idea/
+.opencode/
+.DS_Store
+
+# Defense in depth: never commit secrets, even by accident.
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.*
+credentials.*
+
+# Local test artifacts
+tmp/
+.tmp/

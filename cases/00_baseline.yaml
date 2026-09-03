@@ -1,0 +1,18 @@
+version: 1
+suite: baseline
+finding: PenTest-001
+defaults:
+  auth: any
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: GET-user-me-baseline
+    name: Self-identify via /api/user/me
+    category: baseline
+    method: GET
+    path: /api/user/me
+    mutate: false
+    expect_when_fixed:
+      status_in: [200]

@@ -1,0 +1,107 @@
+version: 1
+suite: user_admin_crud
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: GET-user-findById-foreign
+    name: Horizontal privilege - read other user account
+    category: horizontal_privilege
+    method: GET
+    path: /api/user/findById?userId={{victim_user_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-user-search-enumeration
+    name: User search - global enumeration
+    category: enumeration
+    method: GET
+    path: /api/user/search?draw=1&start=0&length=10
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-user-search-with-victim
+    name: User search - filter by victim id
+    category: enumeration
+    method: GET
+    path: /api/user/search?draw=1&start=0&length=10&columns[0][data]=id&columns[0][searchable]=true&columns[0][search][value]={{victim_user_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-user-menu
+    name: User menu - should only show actor's providers
+    category: baseline
+    method: GET
+    path: /api/user/menu
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+      must_equal: {}
+    expect_when_fixed:
+      status_in: [200]
+
+  - id: GET-user-menu-foreign-provider
+    name: User menu - filter by foreign provider
+    category: horizontal_privilege
+    method: GET
+    path: /api/user/menu?providerId={{foreign_provider_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: POST-user-create
+    name: Create user as non-admin
+    category: vertical_privilege
+    method: POST
+    path: /api/user
+    destructive: true
+    mutate: true
+    body:
+      id: "tap-authz-victim-{{victim_user_id}}"
+      name: "Authz Probe Victim"
+      status: ACT
+      isAdmin: false
+      companyName: "Test"
+      clients: []
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: DELETE-user-id
+    name: Delete user as non-admin
+    category: vertical_privilege
+    method: DELETE
+    path: /api/user?id={{victim_user_id}}
+    destructive: true
+    mutate: true
+    mark_vulnerable_if:
+      status_in: [200, 204]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-user-allowed-roles-foreign-client
+    name: Read allowed roles for client not assigned
+    category: horizontal_privilege
+    method: GET
+    path: /api/user/allowed-roles/client/{{foreign_provider_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]

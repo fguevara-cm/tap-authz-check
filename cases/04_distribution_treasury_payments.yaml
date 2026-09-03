@@ -1,0 +1,127 @@
+version: 1
+suite: distribution_treasury_payments
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: GET-distribution-v2-list
+    name: Distribution v2 list (treasury flag required)
+    category: distribution
+    method: GET
+    path: /api/distribution-v2?draw=1&start=0&length=10
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-distribution-payments-summary
+    name: Distribution payments summary
+    category: distribution
+    method: GET
+    path: /api/distribution-payments/summary
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-distribution-payments-by-context
+    name: Distribution payments by context
+    category: distribution
+    method: GET
+    path: /api/distribution-payments/by-context
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-distribution-payments-summary
+    name: Distribution payments compute summary
+    category: distribution
+    method: POST
+    path: /api/distribution-payments/summary
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-payment-instructions-search
+    name: Payment instructions search
+    category: payment_instructions
+    method: GET
+    path: /api/payment-instructions/summary/search?draw=1&start=0&length=10
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-payment-instructions-by-context
+    name: Payment instructions by context
+    category: payment_instructions
+    method: GET
+    path: /api/payment-instructions/by-context
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-payment-instructions-start
+    name: Start payment instructions (destructive mutation)
+    category: payment_instructions
+    method: POST
+    path: /api/payment-instructions/start
+    destructive: true
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      ids: ["{{trade_id}}"]
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-settlements-by-id
+    name: Settlement by id (horizontal probe)
+    category: settlement
+    method: GET
+    path: /api/settlements/{{settlement_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: GET-settlements-findBySettlementNo
+    name: Settlement by settlement number
+    category: settlement
+    method: GET
+    path: /api/settlements/findBySettlementNo/{{settlement_id}}
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403, 404]
+
+  - id: POST-settlements-findByAllIds
+    name: Settlement batch lookup (information disclosure)
+    category: settlement
+    method: POST
+    path: /api/settlements/findByAllIds
+    mutate: true
+    body:
+      ids: ["{{settlement_id}}"]
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]

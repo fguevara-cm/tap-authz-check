@@ -1,0 +1,89 @@
+version: 1
+suite: analytics_and_reports
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: GET-reports-graphics-overview
+    name: Reports graphics - overview
+    category: reports
+    method: GET
+    path: /api/reports/graphics/overview
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-reports-graphics-capacity-utilization
+    name: Reports graphics - capacity utilization
+    category: reports
+    method: GET
+    path: /api/reports/graphics/capacityUtilization
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-reports-graphics-balance
+    name: Reports graphics - balance
+    category: reports
+    method: GET
+    path: /api/reports/graphics/balance
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-reports-graphics-pastDue
+    name: Reports graphics - past due
+    category: reports
+    method: GET
+    path: /api/reports/graphics/pastDue
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-reports-graphics-export
+    name: Reports graphics - export (mutation)
+    category: reports
+    method: POST
+    path: /api/reports/graphics/export
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      format: "csv"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-reports-graphics-reportKeys
+    name: Reports graphics - report keys enumeration
+    category: reports
+    method: GET
+    path: /api/reports/graphics/reportKeys
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: GET-reports-graphics-portfolioSummary
+    name: Reports graphics - portfolio summary
+    category: reports
+    method: GET
+    path: /api/reports/graphics/portfolioSummary
+    mutate: false
+    mark_vulnerable_if:
+      status_in: [200]
+    expect_when_fixed:
+      status_in: [401, 403]
