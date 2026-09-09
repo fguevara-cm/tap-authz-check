@@ -12,11 +12,11 @@ help:
 	@echo "  make install        Install runtime deps"
 	@echo "  make install-dev    Install runtime + dev deps (editable)"
 	@echo "  make lint           Run ruff"
-	@echo "  make secrets-scan   Scan tracked files for JWTs / secret-like content"
+	@echo "  make secrets-scan   Scan tracked files for JWTs / session tokens / secret-like content"
 	@echo "  make test           Run pytest (offline suite)"
 	@echo "  make discover       Regenerate cases/99_discovery_catalog.yaml from TAP API src"
-	@echo "  make run-audit      Run audit mode (requires TAP_AUTHZ_TOKEN)"
-	@echo "  make run-verify     Run verify mode (requires TAP_AUTHZ_TOKEN)"
+	@echo "  make run-audit      Run audit mode (requires TAP_AUTHZ_SESSION_TOKEN)"
+	@echo "  make run-verify     Run verify mode (requires TAP_AUTHZ_SESSION_TOKEN)"
 
 venv:
 	$(PYTHON) -m venv $(VENV)

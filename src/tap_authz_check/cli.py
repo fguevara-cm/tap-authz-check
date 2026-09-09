@@ -18,8 +18,14 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Authorization testing tool for TAP API (PenTest-001).",
     )
     parser.add_argument("--base-url", help="API base URL (default from env)")
-    parser.add_argument("--token", help="Bearer token of low-privilege user")
-    parser.add_argument("--admin-token", help="Bearer token of admin user (positive controls)")
+    parser.add_argument(
+        "--session-token",
+        help="Stitch session_token of low-privilege user (alternative: TAP_AUTHZ_SESSION_TOKEN or SESSION_TOKEN env)",
+    )
+    parser.add_argument(
+        "--admin-session-token",
+        help="Stitch session_token of admin user for positive controls (alt: TAP_AUTHZ_ADMIN_SESSION_TOKEN env)",
+    )
     parser.add_argument("--mode", choices=[m.value for m in RunMode], help="audit or verify")
     parser.add_argument(
         "--cases",
@@ -40,7 +46,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--force-admin-token",
         action="store_true",
-        help="Allow running with an admin token (positive controls)",
+        help="Allow running with an admin session_token (positive controls)",
     )
     parser.add_argument("--compare-admin", action="store_true", help="Re-run cases with admin token")
     parser.add_argument("--delay-ms", type=int, help="Delay between requests in milliseconds")
@@ -60,8 +66,8 @@ def main(argv: list[str] | None = None) -> int:
 
     overrides = {
         "base_url": args.base_url,
-        "token": args.token,
-        "admin_token": args.admin_token,
+        "session_token": args.session_token,
+        "admin_session_token": args.admin_session_token,
         "fixture_file": args.fixture_file,
         "timeout_seconds": args.timeout,
         "delay_ms": args.delay_ms,

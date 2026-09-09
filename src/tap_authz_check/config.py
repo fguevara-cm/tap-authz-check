@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from pathlib import Path
 
-from pydantic import Field, field_validator
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,11 +21,22 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
+        populate_by_name=True,
     )
 
     base_url: str = Field(default="https://api.tap.mirror.capmotion.io")
-    token: str = Field(default="")
-    admin_token: str = Field(default="")
+    session_token: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            "TAP_AUTHZ_SESSION_TOKEN", "SESSION_TOKEN", "session_token"
+        ),
+    )
+    admin_session_token: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            "TAP_AUTHZ_ADMIN_SESSION_TOKEN", "ADMIN_SESSION_TOKEN", "admin_session_token"
+        ),
+    )
     fixture_file: Path = Field(default=Path("fixtures/mirror.yaml"))
     timeout_seconds: float = Field(default=30.0, gt=0)
     mode: RunMode = Field(default=RunMode.AUDIT)
@@ -47,6 +58,4 @@ def load_settings(**overrides: object) -> Settings:
     data: dict[str, object] = {k: v for k, v in overrides.items() if v is not None}
     if "timeout" in data:
         data["timeout_seconds"] = data.pop("timeout")
-    if "delay_ms" not in data:
-        pass
     return Settings(**data)  # type: ignore[arg-type]

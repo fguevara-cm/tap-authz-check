@@ -19,13 +19,18 @@ Convenciones operativas para agentes que trabajen en este repositorio.
 
 1. **No** concentrar lógica en `main.py`; solo delega al paquete (`src/tap_authz_check/`).
 2. Lógica de negocio en `src/tap_authz_check/*.py` como paquete instalable.
-3. **Nunca** persistir JWT, header `Authorization`, passwords ni cookies en archivos
-   (YAML, fixtures, logs, reportes).
+3. **Nunca** persistir `session_token`, cookies, JWT de sesión (`TAP_SESSION_JWT`),
+   refresh token (`TAP_REFRESH_TOKEN`), header `Authorization`, passwords ni
+   tokens CSRF en archivos (YAML, fixtures, logs, reportes).
 4. **Nunca** considerar un `5xx` como remediación (`FIXED`): siempre es `ERROR`.
 5. Placeholders no resueltos ⇒ `SKIP`, nunca string vacío.
 6. Mutaciones solo en casos explícitos con `mutate: true`; `--no-mutate` filtra.
 7. Destructive (`POST/DELETE /api/user`) requiere `--allow-destructive` y fixture explícito.
-8. Redacción centralizada en `client.py` (header `Authorization`, `Cookie`, `Set-Cookie`).
+8. Redacción centralizada en `client.py` (header `Authorization`, `Cookie`,
+   `Set-Cookie`, `X-XSRF-TOKEN`).
+9. **Auth**: sin Bearer; el `session_token` de Stitch se intercambia una vez en
+   `session.establish_authenticated_client` y todas las llamadas reusan cookies
+   (TAP_SESSION_JWT, XSRF-TOKEN) automáticamente vía el jar de `httpx.Client`.
 
 ## Estilo
 
@@ -38,8 +43,8 @@ Convenciones operativas para agentes que trabajen en este repositorio.
 
 ```
 main.py                  → entrypoint (delega)
-src/tap_authz_check/     → paquete (cli, client, bootstrap, models, templates,
-                           classify, runner, report, config, loader)
+src/tap_authz_check/     → paquete (cli, client, bootstrap, session, models,
+                           templates, classify, runner, report, config, loader)
 cases/                   → suites YAML (00..06, 99)
 fixtures/                → IDs no secretos (mirror.example.yaml)
 tests/                   → suite offline
@@ -56,8 +61,9 @@ make venv
 make install-dev
 make lint
 make test
-make run-audit    # requiere TAP_AUTHZ_TOKEN
-make run-verify   # requiere TAP_AUTHZ_TOKEN
+make secrets-scan
+make run-audit    # requiere TAP_AUTHZ_SESSION_TOKEN (o SESSION_TOKEN)
+make run-verify   # requiere TAP_AUTHZ_SESSION_TOKEN (o SESSION_TOKEN)
 ```
 
 ## Fases
@@ -77,5 +83,5 @@ make run-verify   # requiere TAP_AUTHZ_TOKEN
 - Modificar usuario real → usuario seller dedicado + fixtures verificadas.
 - Confundir `500` con fix → regla dura: `5xx` ⇒ `ERROR`.
 - Token admin accidental → bootstrap aborta con `2` salvo `--force-admin-token`.
-- Exposición de JWT → redacción centralizada + tests.
+- Exposición de session_token / cookies → redacción centralizada + tests.
 - Sobreinterpretar discovery → `PASSIVE` por defecto.

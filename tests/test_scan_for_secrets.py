@@ -27,7 +27,10 @@ def test_scan_detects_jwt() -> None:
 def test_scan_ignores_empty_env_template() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / ".env.example"
-        path.write_text("TAP_AUTHZ_TOKEN=\nTAP_AUTHZ_ADMIN_TOKEN=\n", encoding="utf-8")
+        path.write_text(
+            "TAP_AUTHZ_SESSION_TOKEN=\nTAP_AUTHZ_ADMIN_SESSION_TOKEN=\n",
+            encoding="utf-8",
+        )
         matches = scan([path])
         assert matches == []
 
@@ -46,6 +49,30 @@ def test_scan_detects_nonempty_token_var() -> None:
         path.write_text("TAP_AUTHZ_TOKEN=eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ0ZXN0In0.sig\n", encoding="utf-8")
         matches = scan([path])
         assert any(name == "token_var" for _, name, _ in matches)
+
+
+def test_scan_detects_nonempty_session_token_var() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "leak.env"
+        path.write_text("TAP_AUTHZ_SESSION_TOKEN=eyJhbGciOiJSUzI1NiJ9.signature_long_enough\n", encoding="utf-8")
+        matches = scan([path])
+        assert any(name == "session_token_var" for _, name, _ in matches)
+
+
+def test_scan_detects_bare_session_token_var() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "leak.env"
+        path.write_text("SESSION_TOKEN=eyJhbGciOiJSUzI1NiJ9.signature_long_enough\n", encoding="utf-8")
+        matches = scan([path])
+        assert any(name == "bare_session_token_var" for _, name, _ in matches)
+
+
+def test_scan_detects_session_cookie_header() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "log.txt"
+        path.write_text("Set-Cookie: TAP_SESSION_JWT=eyJhbGciOiJSUzI1NiJ9.signature\n", encoding="utf-8")
+        matches = scan([path])
+        assert any(name == "session_cookie" for _, name, _ in matches)
 
 
 def test_scan_ignores_safe_content() -> None:

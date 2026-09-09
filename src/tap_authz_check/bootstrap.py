@@ -1,4 +1,4 @@
-"""Bootstrap: GET /api/user/me snapshot with admin-token guardrail."""
+"""Bootstrap: GET /api/user/me snapshot with admin-session guardrail."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ def fetch_actor(
     if snapshot.is_admin and not (allow_admin or force_admin_token):
         raise BootstrapError(
             "actor is admin; aborting to avoid privilege escalation on a real admin "
-            "(use --force-admin-token for positive controls)"
+            "(use --force-admin-token for positive controls with the admin session_token)"
         )
 
     return snapshot

@@ -25,6 +25,7 @@ from .models import (
     RunSummary,
     TestCase,
 )
+from .session import SessionExchangeError, establish_authenticated_client, refresh_session
 from .templates import build_context, has_unresolved
 
 
@@ -62,19 +63,27 @@ class Runner:
             actor = ActorSnapshot(email="<dry-run>")
             results = self._execute_dry_run(suites, fixture)
         else:
-            token = (
-                self._settings.admin_token
-                if self._use_admin_token and self._settings.admin_token
-                else self._settings.token
+            session_token = (
+                self._settings.admin_session_token
+                if self._use_admin_token and self._settings.admin_session_token
+                else self._settings.session_token
             )
-            if not token:
-                raise BootstrapError("token missing: set TAP_AUTHZ_TOKEN or pass --token")
-            with HttpClient(
-                base_url=self._settings.base_url,
-                token=token,
-                timeout_seconds=self._settings.timeout_seconds,
-                delay_ms=self._settings.delay_ms,
-            ) as client:
+            if not session_token:
+                raise BootstrapError(
+                    "session_token missing: set TAP_AUTHZ_SESSION_TOKEN "
+                    "(or SESSION_TOKEN) or pass --session-token"
+                )
+            try:
+                client = establish_authenticated_client(
+                    base_url=self._settings.base_url,
+                    session_token=session_token,
+                    timeout_seconds=self._settings.timeout_seconds,
+                    delay_ms=self._settings.delay_ms,
+                )
+            except SessionExchangeError as exc:
+                raise BootstrapError(f"session bootstrap failed: {exc}") from exc
+            client.set_refresh_hook(refresh_session)
+            with client:
                 actor = fetch_actor(
                     client,
                     allow_admin=self._use_admin_token,

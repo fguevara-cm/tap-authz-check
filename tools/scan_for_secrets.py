@@ -1,12 +1,14 @@
-"""Scan tracked files for JWTs, bearer tokens and other common secret shapes.
+"""Scan tracked files for JWTs, session tokens and other common secret shapes.
 
 Used as a pre-commit / pre-push guardrail. Exits non-zero if a secret pattern
 matches a tracked file. Skips ``reports/``, ``.venv/`` and binary files.
 
 Patterns checked (conservative, designed to minimise false positives):
 - ``eyJ[A-Za-z0-9_-]+\\.eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+`` (JWT)
-- ``Authorization: Bearer <token>``
-- ``TAP_AUTHZ_TOKEN=...`` (non-empty value)
+- ``Authorization: Bearer <token>`` (legacy Bearer usage)
+- ``TAP_AUTHZ_TOKEN=...`` / ``TAP_AUTHZ_SESSION_TOKEN=...`` (non-empty value)
+- ``SESSION_TOKEN=...`` / ``ADMIN_SESSION_TOKEN=...`` (bare aliases, non-empty)
+- ``Set-Cookie: TAP_SESSION_JWT=...`` (non-empty value)
 - ``-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----``
 """
 
@@ -22,11 +24,15 @@ PATTERNS: dict[str, str] = {
     "jwt": r"eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+",
     "bearer": r"(?im)^[^#\n]*Authorization:\s*Bearer\s+[A-Za-z0-9._\-]{20,}",
     "token_var": r"(?im)^\s*TAP_AUTHZ_(?:ADMIN_)?TOKEN\s*=[ \t]*([A-Za-z0-9._\-+/=]+)",
+    "session_token_var": r"(?im)^\s*TAP_AUTHZ_(?:ADMIN_)?SESSION_TOKEN\s*=[ \t]*([A-Za-z0-9._\-+/=]{16,})",
+    "bare_session_token_var": r"(?im)^\s*(?:ADMIN_)?SESSION_TOKEN\s*=[ \t]*([A-Za-z0-9._\-+/=]{16,})",
+    "session_cookie": r"(?im)^[^\n]*Set-Cookie:\s*TAP_SESSION_JWT=[A-Za-z0-9._\-+/=]+",
     "private_key": r"-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----",
 }
 
 EXCLUDE_DIRS = {".venv", "venv", "build", "dist", ".pytest_cache", ".ruff_cache", "reports", "node_modules", ".git", ".opencode", ".idea", "tmp"}
 EXCLUDE_FILES = {"scan_for_secrets.py"}
+ENV_FILES = {".env"}
 TEXT_SUFFIXES = {".py", ".yaml", ".yml", ".json", ".md", ".txt", ".env", ".example", ".toml", ".cfg", ".ini", ".sh", ".js", ".ts", ".html", ".css", ".sql"}
 
 
@@ -49,6 +55,8 @@ def _iter_files() -> list[Path]:
             continue
         if path.name in EXCLUDE_FILES or "test_scan_for_secrets" in path.name:
             continue
+        if path.name in ENV_FILES:
+            continue
         if not _is_text(path):
             continue
         files.append(path)
@@ -60,6 +68,8 @@ def scan(paths: list[Path] | None = None) -> list[tuple[Path, str, str]]:
     targets = paths or _iter_files()
     for path in targets:
         if path.name in EXCLUDE_FILES or "test_scan_for_secrets" in path.name:
+            continue
+        if path.name in ENV_FILES:
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
         for name, pattern in PATTERNS.items():

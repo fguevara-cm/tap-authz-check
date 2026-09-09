@@ -31,28 +31,34 @@ Copiar `.env.example` a `.env` y completar:
 cp .env.example .env
 ```
 
-> ⚠️ **Nunca** pegues un JWT real en `.env`, chats, issues, logs o commits.
-> Obtén el token dinámicamente desde un secret manager (1Password CLI, Vault,
-> Doppler) y expórtalo como variable de entorno: `export TAP_AUTHZ_TOKEN=$(op read ...)`.
+> ⚠️ **Nunca** pegues un `session_token`, JWT o cookie real en `.env`, chats, issues,
+> logs o commits. Obtén el session_token dinámicamente desde un secret manager
+> (1Password CLI, Vault, Doppler) y expórtalo como variable de entorno:
+> `export TAP_AUTHZ_SESSION_TOKEN=$(op read ...)`.
+
+La herramienta intercambia el `session_token` contra `POST /api/public/auth/session`
+y reutiliza las cookies resultantes (`TAP_SESSION_JWT`, `TAP_REFRESH_TOKEN`,
+`XSRF-TOKEN`) en todas las llamadas. Si la sesión expira, se reintenta
+automáticamente una vez vía `POST /api/public/auth/refresh-token`.
 
 Variables:
 
 | Variable | Descripción |
 |---|---|
 | `TAP_AUTHZ_BASE_URL` | URL base de la API |
-| `TAP_AUTHZ_TOKEN` | JWT del usuario de bajo privilegio |
-| `TAP_AUTHZ_ADMIN_TOKEN` | JWT admin opcional para controles positivos |
+| `TAP_AUTHZ_SESSION_TOKEN` | Session token de Stitch (usuario de bajo privilegio) |
+| `TAP_AUTHZ_ADMIN_SESSION_TOKEN` | Session token admin opcional para controles positivos |
 | `TAP_AUTHZ_FIXTURE_FILE` | Path a fixtures (IDs no secretos) |
 | `TAP_AUTHZ_TIMEOUT_SECONDS` | Timeout HTTP por request |
 | `TAP_AUTHZ_MODE` | `audit` o `verify` |
 | `TAP_AUTHZ_DELAY_MS` | Espera entre requests |
 
-El JWT **nunca** debe almacenarse en YAML, fixtures ni reportes.
+Aliases: `SESSION_TOKEN` ≡ `TAP_AUTHZ_SESSION_TOKEN`,
+`ADMIN_SESSION_TOKEN` ≡ `TAP_AUTHZ_ADMIN_SESSION_TOKEN`.
 
-Si por error tu token contiene caracteres no-ASCII (ej. `…`), la CLI fallará
-con `config error: token contains non-ASCII characters; rotate the JWT and ensure it is base64url-only`
-y exit code `2`. **Rota el token inmediatamente** — un JWT con caracteres no
-estándar no es legítimo y debe considerarse comprometido.
+El `session_token`, las cookies y el JWT **nunca** se almacenan en YAML, fixtures
+ni reportes (la redacción centralizada en `client.py` cubre headers `Authorization`,
+`Cookie`, `Set-Cookie` y `X-XSRF-TOKEN`).
 
 ## 3. Fixtures
 
@@ -161,6 +167,14 @@ nunca se serializan. Use `--redact-bodies` para desactivar snippets de body.
 pentest-001-authz/                   # nombre del directorio (proyecto: tap-authz-check)
 ├── main.py                          # ejecutable principal (delega al paquete)
 ├── src/tap_authz_check/             # paquete instalable
+│   ├── cli.py                      # argparse
+│   ├── config.py                   # pydantic-settings (TAP_AUTHZ_*)
+│   ├── client.py                   # httpx.Client wrapper, CSRF, refresh hook
+│   ├── session.py                  # exchange Stitch → cookies + refresh
+│   ├── bootstrap.py                # GET /api/user/me snapshot + guardrail admin
+│   ├── runner.py                   # orquestación de suites
+│   ├── classify.py                 # status → Classification
+│   ├── models.py / loader.py / templates.py / report.py
 ├── cases/                           # suites YAML
 │   ├── 00_baseline.yaml             # GET /api/user/me
 │   ├── 01_user_privilege_escalation.yaml  # PoC 1:1 + flags + horizontal
@@ -200,7 +214,7 @@ make lint           # ruff
 make secrets-scan   # escanear archivos por JWTs / secretos
 make test           # pytest offline (34 tests)
 make discover       # regenerar suite 99 desde tap-api
-make run-audit      # TAP_AUTHZ_TOKEN=... tap-authz-check --mode audit
+make run-audit      # TAP_AUTHZ_SESSION_TOKEN=... tap-authz-check --mode audit
 make run-verify     # post-fix
 make clean          # limpia reports/ y caches
 ```

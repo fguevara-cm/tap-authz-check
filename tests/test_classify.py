@@ -168,15 +168,3 @@ def test_5xx_never_fixed(code: int) -> None:
         missing_placeholders=[],
     )
     assert classification is Classification.ERROR
-
-
-def test_non_ascii_token_raises_value_error() -> None:
-    from tap_authz_check.client import HttpClient
-
-    bad_token = "header.payload.\u2026sig"
-    with pytest.raises(ValueError, match="non-ASCII"):
-        HttpClient(
-            base_url="https://example.test",
-            token=bad_token,
-            timeout_seconds=1.0,
-        )
