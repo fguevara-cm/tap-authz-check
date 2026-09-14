@@ -1,0 +1,45 @@
+version: 1
+suite: asset_adjustments
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-asset-adjustments-config-provider
+  method: GET
+  path: /api/asset-adjustments/config/{{foreign_provider_id}}
+  mutate: false
+  required: false
+- id: GET-asset-adjustments
+  method: GET
+  path: /api/asset-adjustments
+  mutate: false
+  required: false
+- id: GET-asset-adjustments-summary
+  method: GET
+  path: /api/asset-adjustments/summary
+  mutate: false
+  required: false
+- id: GET-asset-adjustments-config-providerId-adjustmentType
+  name: Passive authorization probe for /api/asset-adjustments/config/{providerId}/{adjustmentType}
+  category: passive_probe
+  method: GET
+  path: /api/asset-adjustments/config/{{foreign_provider_id}}/{{adjustment_type}}
+  mutate: false
+  required: false
+- id: GET-asset-adjustments-history-adjustmentId
+  name: Passive authorization probe for /api/asset-adjustments-history/{adjustmentId}
+  category: passive_probe
+  method: GET
+  path: /api/asset-adjustments-history/{{foreign_adjustment_id}}
+  mutate: false
+  required: false
+- id: GET-asset-adjustments-adjustmentId-asset-ajustment
+  name: Passive authorization probe for /api/asset-adjustments/{adjustmentId}/asset-ajustment
+  category: passive_probe
+  method: GET
+  path: /api/asset-adjustments/{{foreign_adjustment_id}}/asset-ajustment
+  mutate: false
+  required: false

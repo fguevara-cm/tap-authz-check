@@ -1,0 +1,45 @@
+version: 1
+suite: past_due_fee
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-past-due-fee-totals
+  method: GET
+  path: /api/past-due-fee/totals
+  mutate: false
+  required: false
+- id: GET-past-due-fee-sofr-applied-today
+  method: GET
+  path: /api/past-due-fee/sofr/applied/today
+  mutate: false
+  required: false
+- id: GET-past-due-fee-configurations-by-client
+  method: GET
+  path: /api/past-due-fee/configurations/by-client
+  mutate: false
+  required: false
+- id: GET-past-due-fee-totals-byInvoiceNumber-invoiceNumber
+  name: Passive authorization probe for /api/past-due-fee/totals/byInvoiceNumber/{invoiceNumber}
+  category: passive_probe
+  method: GET
+  path: /api/past-due-fee/totals/byInvoiceNumber/{{invoice_number}}
+  mutate: false
+  required: false
+- id: GET-past-due-fee-totals-pastDueFeeTotalId
+  name: Passive authorization probe for /api/past-due-fee/totals/{pastDueFeeTotalId}
+  category: passive_probe
+  method: GET
+  path: /api/past-due-fee/totals/{{foreign_past_due_fee_total_id}}
+  mutate: false
+  required: false
+- id: GET-past-due-fee-totals-pastDueFeeTotalId-invoices
+  name: Passive authorization probe for /api/past-due-fee/totals/{pastDueFeeTotalId}/invoices
+  category: passive_probe
+  method: GET
+  path: /api/past-due-fee/totals/{{foreign_past_due_fee_total_id}}/invoices
+  mutate: false
+  required: false

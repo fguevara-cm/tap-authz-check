@@ -1,0 +1,56 @@
+version: 1
+suite: distribution_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-distribution-findByParentId-settlement
+  method: GET
+  path: /api/distribution/findByParentId/{{settlement_id}}
+  mutate: false
+  required: false
+- id: GET-distribution-settlement-invoices
+  method: GET
+  path: /api/distribution/{{settlement_id}}/invoices
+  mutate: false
+  required: false
+- id: GET-distribution-byParent-download-excel
+  method: GET
+  path: /api/distribution/byParent/download/excel
+  mutate: false
+  required: false
+- id: GET-distribution-asset-detail-download-excel
+  method: GET
+  path: /api/distribution/asset-detail/download/excel
+  mutate: false
+  required: false
+- id: GET-distribution-payment-download-excel
+  method: GET
+  path: /api/distribution/payment/download/excel
+  mutate: false
+  required: false
+- id: GET-distribution-payments-by-context-download-excel
+  method: GET
+  path: /api/distribution-payments/by-context/download/excel
+  mutate: false
+  required: false
+- id: GET-distribution-payments-should-use-distribution-payments
+  method: GET
+  path: /api/distribution-payments/should-use-distribution-payments
+  mutate: false
+  required: false
+- id: GET-distribution-v2-download-excel
+  method: GET
+  path: /api/distribution-v2/download/excel
+  mutate: false
+  required: false
+- id: GET-distribution-getPaymentInstructions-distributionId-role
+  name: Passive authorization probe for /api/distribution/getPaymentInstructions/{distributionId}/{role}
+  category: passive_probe
+  method: GET
+  path: /api/distribution/getPaymentInstructions/{{foreign_distribution_id}}/{{role}}
+  mutate: false
+  required: false

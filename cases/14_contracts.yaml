@@ -1,0 +1,31 @@
+version: 1
+suite: contracts
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-contracts-search
+  method: GET
+  path: /api/contracts/search
+  mutate: false
+  required: false
+- id: GET-contracts-download-excel
+  method: GET
+  path: /api/contracts/download/excel
+  mutate: false
+  required: false
+- id: GET-contracts-download-csv
+  method: GET
+  path: /api/contracts/download/csv
+  mutate: false
+  required: false
+- id: GET-contracts-provider-investor-type
+  name: Passive authorization probe for /api/contracts/provider-investor/{type}
+  category: passive_probe
+  method: GET
+  path: /api/contracts/provider-investor/{{type}}
+  mutate: false
+  required: false

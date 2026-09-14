@@ -1,0 +1,61 @@
+version: 1
+suite: payments_treasury_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-payment-instructions-details-search
+  method: GET
+  path: /api/payment-instructions/details/search
+  mutate: false
+  required: false
+- id: GET-payment-instructions-download-template-execute
+  method: GET
+  path: /api/payment-instructions/download-template-execute
+  mutate: false
+  required: false
+- id: GET-payment-releases-v2
+  method: GET
+  path: /api/payment-releases-v2
+  mutate: false
+  required: false
+- id: GET-payment-releases-v2-breakdowns
+  method: GET
+  path: /api/payment-releases-v2/breakdowns
+  mutate: false
+  required: false
+- id: GET-payment-releases-v2-payment-instructions
+  method: GET
+  path: /api/payment-releases-v2/payment-instructions
+  mutate: false
+  required: false
+- id: GET-payment-releases-v2-counts
+  method: GET
+  path: /api/payment-releases-v2/counts
+  mutate: false
+  required: false
+- id: GET-treasury-v2
+  method: GET
+  path: /api/treasury-v2
+  mutate: false
+  required: false
+- id: GET-treasury-v2-download-excel
+  method: GET
+  path: /api/treasury-v2/download/excel
+  mutate: false
+  required: false
+- id: GET-treasury-v2-payment-instructions-excel
+  method: GET
+  path: /api/treasury-v2/payment-instructions/excel
+  mutate: false
+  required: false
+- id: GET-payment-releases-v2-itemId
+  name: Passive authorization probe for /api/payment-releases-v2/{itemId}
+  category: passive_probe
+  method: GET
+  path: /api/payment-releases-v2/{{foreign_payment_release_id}}
+  mutate: false
+  required: false

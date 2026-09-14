@@ -1,0 +1,19 @@
+version: 1
+suite: presyndication
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-presyndication-requestByInvoices
+  method: GET
+  path: /api/presyndication/requestByInvoices
+  mutate: false
+  required: false
+- id: GET-presyndication-request
+  method: GET
+  path: /api/presyndication/request
+  mutate: false
+  required: false

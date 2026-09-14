@@ -1,0 +1,26 @@
+version: 1
+suite: i4_integration
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-i4-integration-request-enverus-invoices
+  method: GET
+  path: /api/i4/integration/request-enverus-invoices
+  mutate: false
+  required: false
+- id: GET-i4-integration-get-successful-last-execution
+  method: GET
+  path: /api/i4/integration/get-successful-last-execution
+  mutate: false
+  required: false
+- id: GET-i4-integration-process-enverus-invoices-processStatus
+  name: Passive authorization probe for /api/i4/integration/process-enverus-invoices/{processStatus}
+  category: passive_probe
+  method: GET
+  path: /api/i4/integration/process-enverus-invoices/{{process_status}}
+  mutate: false
+  required: false

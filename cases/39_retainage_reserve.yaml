@@ -1,0 +1,54 @@
+version: 1
+suite: retainage_reserve
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-retainage-assets
+  method: GET
+  path: /api/retainage-assets
+  mutate: false
+  required: false
+- id: GET-retainage-assets-summary
+  method: GET
+  path: /api/retainage-assets/summary
+  mutate: false
+  required: false
+- id: GET-retainage-assets-reserve-summary
+  method: GET
+  path: /api/retainage-assets/reserve-summary
+  mutate: false
+  required: false
+- id: GET-retainage-assets-ledger
+  method: GET
+  path: /api/retainage-assets/ledger
+  mutate: false
+  required: false
+- id: GET-retainage-assets-list
+  method: GET
+  path: /api/retainage-assets/list
+  mutate: false
+  required: false
+- id: GET-retainage-assets-download-excel
+  method: GET
+  path: /api/retainage-assets/download/excel
+  mutate: false
+  required: false
+- id: GET-retainage-assets-ledger-download-excel
+  method: GET
+  path: /api/retainage-assets/ledger/download/excel
+  mutate: false
+  required: false
+- id: GET-retainage-reserve-adjustment-pending
+  method: GET
+  path: /api/retainage-reserve-adjustment/pending
+  mutate: false
+  required: false
+- id: GET-retainage-reserve-adjustment-approved
+  method: GET
+  path: /api/retainage-reserve-adjustment/approved
+  mutate: false
+  required: false

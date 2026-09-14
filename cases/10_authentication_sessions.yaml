@@ -1,0 +1,14 @@
+version: 1
+suite: authentication_sessions
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-auth-admin-active-sessions
+  method: GET
+  path: /api/auth/admin/active-sessions
+  mutate: false
+  required: false

@@ -1,0 +1,102 @@
+version: 1
+suite: capacities
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-capacities-clients-investors-total-foreign
+  method: GET
+  path: /api/capacities/clients/{{foreign_provider_id}}/investors/total
+  mutate: false
+  required: false
+- id: GET-capacities-clients-investors-search-foreign
+  method: GET
+  path: /api/capacities/clients/{{foreign_provider_id}}/investors/search
+  mutate: false
+  required: false
+- id: GET-capacities-clients-investors-foreign
+  method: GET
+  path: /api/capacities/clients/{{foreign_provider_id}}/investors
+  mutate: false
+  required: false
+- id: GET-capacities-clients-obligors-search-foreign
+  method: GET
+  path: /api/capacities/clients/{{foreign_provider_id}}/obligors/search
+  mutate: false
+  required: false
+- id: GET-capacities-clients-existing-obligor-pools-foreign
+  method: GET
+  path: /api/capacities/clients/{{foreign_provider_id}}/existing-obligor-pools
+  mutate: false
+  required: false
+- id: GET-capacities
+  method: GET
+  path: /api/capacities
+  mutate: false
+  required: false
+- id: GET-capacities-clients-holdings
+  method: GET
+  path: /api/capacities/clients/holdings
+  mutate: false
+  required: false
+- id: GET-capacities-provider-investor
+  method: GET
+  path: /api/capacities/provider-investor
+  mutate: false
+  required: false
+- id: GET-capacities-obligors-provider-investor
+  method: GET
+  path: /api/capacities/obligors/provider-investor
+  mutate: false
+  required: false
+- id: GET-capacities-provider-investor-pools
+  method: GET
+  path: /api/capacities/provider-investor/pools
+  mutate: false
+  required: false
+- id: GET-capacities-clients-holdings-search
+  method: GET
+  path: /api/capacities/clients/holdings/search
+  mutate: false
+  required: false
+- id: GET-capacities-clients-existing-by-obligor
+  method: GET
+  path: /api/capacities/clients/existing-by-obligor
+  mutate: false
+  required: false
+- id: GET-capacities-clients-generate-pool-name
+  method: GET
+  path: /api/capacities/clients/generate-pool-name
+  mutate: false
+  required: false
+- id: GET-capacities-investor-owner
+  name: Passive authorization probe for /api/capacities/investor/{owner}
+  category: passive_probe
+  method: GET
+  path: /api/capacities/investor/{{foreign_owner}}
+  mutate: false
+  required: false
+- id: GET-capacities-byClientAndOwner-owner
+  name: Passive authorization probe for /api/capacities/byClientAndOwner/{owner}
+  category: passive_probe
+  method: GET
+  path: /api/capacities/byClientAndOwner/{{foreign_owner}}
+  mutate: false
+  required: false
+- id: GET-capacities-clients-holdings-holdingId-providers-search
+  name: Passive authorization probe for /api/capacities/clients/holdings/{holdingId}/providers/search
+  category: passive_probe
+  method: GET
+  path: /api/capacities/clients/holdings/{{foreign_holding_id}}/providers/search
+  mutate: false
+  required: false
+- id: GET-capacities-clients-clientId-obligors-obligorId-search
+  name: Passive authorization probe for /api/capacities/clients/{clientId}/obligors/{obligorId}/search
+  category: passive_probe
+  method: GET
+  path: /api/capacities/clients/{{foreign_client_id}}/obligors/{{foreign_obligor_id}}/search
+  mutate: false
+  required: false

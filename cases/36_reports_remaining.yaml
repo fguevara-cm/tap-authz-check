@@ -1,0 +1,51 @@
+version: 1
+suite: reports_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-reports-graphics-expectedBufferDays
+  method: GET
+  path: /api/reports/graphics/expectedBufferDays
+  mutate: false
+  required: false
+- id: GET-reports-graphics-capacity-utilization-sunburst
+  method: GET
+  path: /api/reports/graphics/capacity-utilization-sunburst
+  mutate: false
+  required: false
+- id: GET-reports-graphics-outstanding
+  method: GET
+  path: /api/reports/graphics/outstanding
+  mutate: false
+  required: false
+- id: GET-reports-graphics-obligorConcentration
+  method: GET
+  path: /api/reports/graphics/obligorConcentration
+  mutate: false
+  required: false
+- id: GET-reports-graphics-investorConcentration
+  method: GET
+  path: /api/reports/graphics/investorConcentration
+  mutate: false
+  required: false
+- id: GET-reports-graphics-settlementSummary
+  method: GET
+  path: /api/reports/graphics/settlementSummary
+  mutate: false
+  required: false
+- id: GET-reports-graphics-purchaseSummary
+  method: GET
+  path: /api/reports/graphics/purchaseSummary
+  mutate: false
+  required: false
+- id: GET-reports-quicksight-id
+  name: Passive authorization probe for /api/reports/quicksight/{id}
+  category: passive_probe
+  method: GET
+  path: /api/reports/quicksight/{{foreign_quicksight_report_id}}
+  mutate: false
+  required: false

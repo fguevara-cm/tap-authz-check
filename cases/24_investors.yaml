@@ -1,0 +1,48 @@
+version: 1
+suite: investors
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-investors-active-client-foreign
+  method: GET
+  path: /api/investors/active/client/{{foreign_provider_id}}
+  mutate: false
+  required: false
+- id: GET-investors-active-client-no-mai-foreign
+  method: GET
+  path: /api/investors/active/client/{{foreign_provider_id}}/no-mai
+  mutate: false
+  required: false
+- id: GET-investors-plusMai-provider-foreign
+  method: GET
+  path: /api/investors/plusMai/provider/{{foreign_provider_id}}
+  mutate: false
+  required: false
+- id: GET-investors
+  method: GET
+  path: /api/investors
+  mutate: false
+  required: false
+- id: GET-investors-search
+  method: GET
+  path: /api/investors/search
+  mutate: false
+  required: false
+- id: GET-investors-investorId
+  name: Passive authorization probe for /api/investors/{investorId}
+  category: passive_probe
+  method: GET
+  path: /api/investors/{{foreign_investor_id}}
+  mutate: false
+  required: false
+- id: GET-investors-parentId-search
+  name: Passive authorization probe for /api/investors/{parentId}/search
+  category: passive_probe
+  method: GET
+  path: /api/investors/{{foreign_parent_id}}/search
+  mutate: false
+  required: false

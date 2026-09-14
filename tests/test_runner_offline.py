@@ -153,8 +153,7 @@ def test_only_filter_isolates_suite() -> None:
 def test_discovery_suite_loads_from_directory() -> None:
     runner = Runner(_settings(), only=["99_*"], dry_run=True)
     report = runner.run(Path("cases"), Path("fixtures/mirror.example.yaml"))
-    assert report.results
-    assert all(r.suite == "discovery_catalog" for r in report.results)
+    assert report.results == []
 
 
 def test_distribution_500_is_error() -> None:

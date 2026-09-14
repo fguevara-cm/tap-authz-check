@@ -1,0 +1,26 @@
+version: 1
+suite: document_templates
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-document-templates
+  method: GET
+  path: /api/document-templates
+  mutate: false
+  required: false
+- id: GET-document-templates-find-one
+  method: GET
+  path: /api/document-templates/find-one
+  mutate: false
+  required: false
+- id: GET-document-templates-id
+  name: Passive authorization probe for /api/document-templates/{id}
+  category: passive_probe
+  method: GET
+  path: /api/document-templates/{{foreign_document_template_id}}
+  mutate: false
+  required: false

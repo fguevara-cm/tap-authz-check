@@ -1,0 +1,24 @@
+version: 1
+suite: other_platform
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-investor-trading-invoices-for-sale
+  method: GET
+  path: /api/investor/trading/invoices-for-sale
+  mutate: false
+  required: false
+- id: GET-investor-trading-invoices-for-sale-download-excel
+  method: GET
+  path: /api/investor/trading/invoices-for-sale/download/excel
+  mutate: false
+  required: false
+- id: GET-delete-invoice-options-all
+  method: GET
+  path: /api/delete-invoice-options/all
+  mutate: false
+  required: false

@@ -1,0 +1,26 @@
+version: 1
+suite: deal_conditions
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-deal-search-provider
+  method: GET
+  path: /api/deal/search/{{foreign_provider_id}}
+  mutate: false
+  required: false
+- id: GET-deal-dilutions-provider
+  method: GET
+  path: /api/deal/{{foreign_provider_id}}/dilutions
+  mutate: false
+  required: false
+- id: GET-deal-dealId
+  name: Passive authorization probe for /api/deal/{dealId}
+  category: passive_probe
+  method: GET
+  path: /api/deal/{{foreign_deal_id}}
+  mutate: false
+  required: false

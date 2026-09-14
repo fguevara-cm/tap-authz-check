@@ -1,0 +1,50 @@
+version: 1
+suite: clients_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-clients-obligors-foreign
+  method: GET
+  path: /api/clients/{{foreign_provider_id}}/obligors
+  mutate: false
+  required: false
+- id: GET-clients-holdings
+  method: GET
+  path: /api/clients/holdings
+  mutate: false
+  required: false
+- id: GET-clients-holdings-non-holdings
+  method: GET
+  path: /api/clients/holdings/non-holdings
+  mutate: false
+  required: false
+- id: GET-clients-non-holdings
+  method: GET
+  path: /api/clients/non-holdings
+  mutate: false
+  required: false
+- id: GET-clients-id-info
+  name: Passive authorization probe for /api/clients/{id}/info
+  category: passive_probe
+  method: GET
+  path: /api/clients/{{foreign_client_id}}/info
+  mutate: false
+  required: false
+- id: GET-clients-holdings-holdingId-clients
+  name: Passive authorization probe for /api/clients/holdings/{holdingId}/clients
+  category: passive_probe
+  method: GET
+  path: /api/clients/holdings/{{foreign_holding_id}}/clients
+  mutate: false
+  required: false
+- id: GET-clients-holdings-holdingId-clients-search
+  name: Passive authorization probe for /api/clients/holdings/{holdingId}/clients/search
+  category: passive_probe
+  method: GET
+  path: /api/clients/holdings/{{foreign_holding_id}}/clients/search
+  mutate: false
+  required: false

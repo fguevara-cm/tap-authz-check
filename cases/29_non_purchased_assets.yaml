@@ -1,0 +1,24 @@
+version: 1
+suite: non_purchased_assets
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-non-purchased-assets
+  method: GET
+  path: /api/non-purchased-assets
+  mutate: false
+  required: false
+- id: GET-non-purchased-assets-summary
+  method: GET
+  path: /api/non-purchased-assets/summary
+  mutate: false
+  required: false
+- id: GET-non-purchased-assets-download-excel
+  method: GET
+  path: /api/non-purchased-assets/download/excel
+  mutate: false
+  required: false

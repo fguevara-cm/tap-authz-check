@@ -1,0 +1,14 @@
+version: 1
+suite: users_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-user-investors
+  method: GET
+  path: /api/user/investors
+  mutate: false
+  required: false

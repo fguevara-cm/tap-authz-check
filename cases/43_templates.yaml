@@ -1,0 +1,14 @@
+version: 1
+suite: templates
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-templates-content
+  method: GET
+  path: /api/templates/content
+  mutate: false
+  required: false

@@ -1,0 +1,14 @@
+version: 1
+suite: countries
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-countries-active
+  method: GET
+  path: /api/countries/active
+  mutate: false
+  required: false

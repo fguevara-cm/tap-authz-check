@@ -1,0 +1,26 @@
+version: 1
+suite: docusign
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-docusign-enabled
+  method: GET
+  path: /api/docusign/enabled
+  mutate: false
+  required: false
+- id: GET-docusign-info
+  method: GET
+  path: /api/docusign/info
+  mutate: false
+  required: false
+- id: GET-docusign-enabled-tenantId
+  name: Passive authorization probe for /api/docusign/enabled/{tenantId}
+  category: passive_probe
+  method: GET
+  path: /api/docusign/enabled/{{foreign_tenant_id}}
+  mutate: false
+  required: false

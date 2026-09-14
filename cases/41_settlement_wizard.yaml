@@ -1,0 +1,34 @@
+version: 1
+suite: settlement_wizard
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-settlement-wizard
+  method: GET
+  path: /api/settlement-wizard/{{settlement_id}}
+  mutate: false
+  required: false
+- id: GET-settlement-wizard-obligations-summary
+  method: GET
+  path: /api/settlement-wizard/{{settlement_id}}/obligations-summary
+  mutate: false
+  required: false
+- id: GET-settlement-wizard-reserve-available-summary
+  method: GET
+  path: /api/settlement-wizard/{{settlement_id}}/reserve-available-summary
+  mutate: false
+  required: false
+- id: GET-settlement-wizard-reserve-contribution-impact
+  method: GET
+  path: /api/settlement-wizard/{{settlement_id}}/reserve-contribution-impact
+  mutate: false
+  required: false
+- id: GET-settlement-wizard-buyer-settlement
+  method: GET
+  path: /api/settlement-wizard/{{settlement_id}}/buyer-settlement
+  mutate: false
+  required: false

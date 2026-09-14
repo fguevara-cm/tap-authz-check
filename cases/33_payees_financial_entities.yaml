@@ -1,0 +1,33 @@
+version: 1
+suite: payees_financial_entities
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-financialEntities
+  method: GET
+  path: /api/financialEntities
+  mutate: false
+  required: false
+- id: GET-financialEntities-all
+  method: GET
+  path: /api/financialEntities/all
+  mutate: false
+  required: false
+- id: GET-financialEntities-payeeId
+  name: Passive authorization probe for /api/financialEntities/{payeeId}
+  category: passive_probe
+  method: GET
+  path: /api/financialEntities/{{foreign_payee_id}}
+  mutate: false
+  required: false
+- id: GET-financialEntities-payeeShortName
+  name: Passive authorization probe for /api/financialEntities/{payeeShortName}
+  category: passive_probe
+  method: GET
+  path: /api/financialEntities/{{payee_short_name}}
+  mutate: false
+  required: false

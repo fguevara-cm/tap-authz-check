@@ -1,0 +1,14 @@
+version: 1
+suite: execution_schedules
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-execution-schedules-configuration
+  method: GET
+  path: /api/execution-schedules/configuration
+  mutate: false
+  required: false

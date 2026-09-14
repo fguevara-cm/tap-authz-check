@@ -96,7 +96,28 @@ tap-authz-check --allow-destructive --victim-user "$TEST_VICTIM_USER"
 tap-authz-check --dry-run
 ```
 
-## 6. Códigos de salida
+## 6. Generar nuevas suites desde endpoints
+
+Para crear casos a partir de endpoints nuevos, usar el prompt reutilizable
+[`docs/PROMPT_GENERAR_CASOS_AUTHZ.md`](docs/PROMPT_GENERAR_CASOS_AUTHZ.md). La
+entrada debe indicar, cuando sea posible, el método, path, objetivo de
+autorización, alcance del recurso, fixture, body y si la operación es
+destructiva.
+
+El flujo recomendado es:
+
+1. Preparar una lista de endpoints sin tokens, cookies, JWT, passwords ni otros
+   secretos.
+2. Generar una suite YAML nueva usando los casos existentes como referencia.
+3. Revisar los `PENDIENTES`, placeholders y expectativas antes de guardarla en
+   `cases/`.
+4. Validar la suite sin red con `tap-authz-check --dry-run --cases cases/<suite>.yaml`.
+5. Ejecutar primero `tap-authz-check --no-mutate --cases cases/<suite>.yaml`.
+6. Revisar manualmente los casos `mutate: true` y habilitar los destructivos
+   solo con fixtures de prueba y `--allow-destructive`.
+7. Ejecutar `make secrets-scan` antes de compartir la suite.
+
+## 7. Códigos de salida
 
 | Código | Significado |
 |---|---|
@@ -105,7 +126,7 @@ tap-authz-check --dry-run
 | `2` | Config inválida / token ausente / bootstrap fallido |
 | `3` | `ERROR` indeterminados por encima del umbral |
 
-## 7. Clasificaciones
+## 8. Clasificaciones
 
 - `VULNERABLE` — operación privilegiada aceptada o mutación no autorizada.
 - `FIXED` — política aplicada (`401`, `403` o `404` según el caso).
@@ -113,14 +134,14 @@ tap-authz-check --dry-run
 - `SKIP` — fixtures ausentes, destructive sin flag, guardrail violado.
 - `PASSIVE` — discovery; respuesta informativa sin conclusión de autorización.
 
-## 8. Procedimiento de restauración
+## 9. Procedimiento de restauración
 
 1. Antes de la primera mutación, el runner guarda un snapshot del actor (`/api/user/me`).
 2. El cleanup (`restore_user_snapshot`) se ejecuta en `finally`.
 3. Si el fix bloquea self-update, intentar restaurar con `--admin-token`.
 4. Sin admin token, se registra `WARN` y se documenta la restauración manual.
 
-## 9. Política de casos destructivos
+## 10. Política de casos destructivos
 
 `POST /api/user` y `DELETE /api/user` requieren:
 - `--allow-destructive`
@@ -129,12 +150,12 @@ tap-authz-check --dry-run
 
 Cleanup ambiguo → se omite y se registra como `SKIP`.
 
-## 10. Limitaciones de discovery
+## 11. Limitaciones de discovery
 
 `cases/99_discovery_catalog.yaml` solo ejecuta `GET`/`HEAD`/`OPTIONS`. Las mutaciones nunca
 se infieren automáticamente; cada caso requiere curación manual.
 
-## 11. Reporte sanitizado (ejemplo)
+## 12. Reporte sanitizado (ejemplo)
 
 ```json
 {
@@ -161,7 +182,7 @@ se infieren automáticamente; cada caso requiere curación manual.
 Los campos `Authorization`, JWT completo, passwords, cookies y payloads con secretos
 nunca se serializan. Use `--redact-bodies` para desactivar snippets de body.
 
-## 12. Estructura del proyecto
+## 13. Estructura del proyecto
 
 ```
 pentest-001-authz/                   # nombre del directorio (proyecto: tap-authz-check)
@@ -193,7 +214,7 @@ pentest-001-authz/                   # nombre del directorio (proyecto: tap-auth
 └── docs/schema.sql                  # DDL PostgreSQL
 ```
 
-## 13. Regenerar discovery
+## 14. Regenerar discovery
 
 ```bash
 .venv/bin/python tools/extract_paths_from_java.py \
@@ -205,7 +226,7 @@ pentest-001-authz/                   # nombre del directorio (proyecto: tap-auth
     --out cases/99_discovery_catalog.yaml
 ```
 
-## 8. Comandos Make
+## 15. Comandos Make
 
 ```bash
 make venv           # crear .venv

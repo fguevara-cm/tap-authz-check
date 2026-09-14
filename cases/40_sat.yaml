@@ -1,0 +1,43 @@
+version: 1
+suite: sat
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-satBatchValidation-findByFileId
+  method: GET
+  path: /api/satBatchValidation/findByFileId
+  mutate: false
+  required: false
+- id: GET-satBatchValidation-listByClient
+  method: GET
+  path: /api/satBatchValidation/listByClient
+  mutate: false
+  required: false
+- id: GET-satStatusChange-currentWeek
+  method: GET
+  path: /api/satStatusChange/currentWeek
+  mutate: false
+  required: false
+- id: GET-satStatusChange-rangeDates
+  method: GET
+  path: /api/satStatusChange/rangeDates
+  mutate: false
+  required: false
+- id: GET-satStatusValidations-seekId-monitoring
+  name: Passive authorization probe for /api/satStatusValidations/{seekId}/monitoring
+  category: passive_probe
+  method: GET
+  path: /api/satStatusValidations/{{foreign_sat_seek_id}}/monitoring
+  mutate: false
+  required: false
+- id: GET-satStatusValidations-findByBatchId-batchId
+  name: Passive authorization probe for /api/satStatusValidations/findByBatchId/{batchId}
+  category: passive_probe
+  method: GET
+  path: /api/satStatusValidations/findByBatchId/{{foreign_batch_id}}
+  mutate: false
+  required: false

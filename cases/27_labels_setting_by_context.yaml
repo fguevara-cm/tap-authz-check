@@ -1,0 +1,28 @@
+version: 1
+suite: labels_setting_by_context
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-labels-setting-by-context-items
+  method: GET
+  path: /api/labels-setting-by-context/items
+  mutate: false
+  required: false
+- id: GET-labels-setting-by-context-contextType
+  name: Passive authorization probe for /api/labels-setting-by-context/{contextType}
+  category: passive_probe
+  method: GET
+  path: /api/labels-setting-by-context/{{context_type}}
+  mutate: false
+  required: false
+- id: GET-labels-setting-by-context-items-id
+  name: Passive authorization probe for /api/labels-setting-by-context/items/{id}
+  category: passive_probe
+  method: GET
+  path: /api/labels-setting-by-context/items/{{foreign_label_setting_id}}
+  mutate: false
+  required: false

@@ -1,0 +1,14 @@
+version: 1
+suite: audit_events
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-audit-events
+  method: GET
+  path: /api/audit-events
+  mutate: false
+  required: false

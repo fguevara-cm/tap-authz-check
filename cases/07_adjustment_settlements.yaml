@@ -1,0 +1,21 @@
+version: 1
+suite: adjustment_settlements
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-adjustment-settlements
+  method: GET
+  path: /api/adjustment-settlements
+  mutate: false
+  required: false
+- id: GET-adjustment-settlements-adjustmentSettlementId
+  name: Passive authorization probe for /api/adjustment-settlements/{adjustmentSettlementId}
+  category: passive_probe
+  method: GET
+  path: /api/adjustment-settlements/{{foreign_adjustment_settlement_id}}
+  mutate: false
+  required: false

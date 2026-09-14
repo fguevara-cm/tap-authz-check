@@ -1,0 +1,41 @@
+version: 1
+suite: invoices_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-invoices-getInvoiceById
+  method: GET
+  path: /api/invoices/getInvoiceById/{{invoice_id}}
+  mutate: false
+  required: false
+- id: GET-invoices-findByAll
+  method: GET
+  path: /api/invoices/findByAll
+  mutate: false
+  required: false
+- id: GET-invoices-findInvoiceLog
+  method: GET
+  path: /api/invoices/findInvoiceLog
+  mutate: false
+  required: false
+- id: GET-invoices-loaded-download-excel
+  method: GET
+  path: /api/invoices/loaded/download/excel
+  mutate: false
+  required: false
+- id: GET-invoices-log-download-excel
+  method: GET
+  path: /api/invoices/log/download/excel
+  mutate: false
+  required: false
+- id: GET-invoices-drafts-batchId-invalid
+  name: Passive authorization probe for /api/invoices/drafts/{batchId}/invalid
+  category: passive_probe
+  method: GET
+  path: /api/invoices/drafts/{{foreign_batch_id}}/invalid
+  mutate: false
+  required: false

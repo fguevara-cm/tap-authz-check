@@ -1,0 +1,23 @@
+version: 1
+suite: obligors_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-obligors-active-providerChild-providerChildId
+  name: Passive authorization probe for /api/obligors/active/providerChild/{providerChildId}
+  category: passive_probe
+  method: GET
+  path: /api/obligors/active/providerChild/{{foreign_child_provider_id}}
+  mutate: false
+  required: false
+- id: GET-obligors-obligorId
+  name: Passive authorization probe for /api/obligors/{obligorId}
+  category: passive_probe
+  method: GET
+  path: /api/obligors/{{foreign_obligor_id}}
+  mutate: false
+  required: false

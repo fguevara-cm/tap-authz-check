@@ -1,0 +1,33 @@
+version: 1
+suite: files_documents_remaining
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-files-findByAll
+  method: GET
+  path: /api/files/findByAll
+  mutate: false
+  required: false
+- id: GET-files-download-excel
+  method: GET
+  path: /api/files/download/excel
+  mutate: false
+  required: false
+- id: GET-files-downloadFile-fileId
+  name: Passive authorization probe for /api/files/downloadFile/{fileId}
+  category: passive_probe
+  method: GET
+  path: /api/files/downloadFile/{{foreign_file_id}}
+  mutate: false
+  required: false
+- id: GET-files-templates-fileType
+  name: Passive authorization probe for /api/files/templates/{fileType}
+  category: passive_probe
+  method: GET
+  path: /api/files/templates/{{file_type}}
+  mutate: false
+  required: false

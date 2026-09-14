@@ -1,0 +1,33 @@
+version: 1
+suite: external_collections
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+cases:
+- id: GET-external-collections
+  method: GET
+  path: /api/external-collections
+  mutate: false
+  required: false
+- id: GET-external-collections-count
+  method: GET
+  path: /api/external-collections/count
+  mutate: false
+  required: false
+- id: GET-external-collections-id
+  name: Passive authorization probe for /api/external-collections/{id}
+  category: passive_probe
+  method: GET
+  path: /api/external-collections/{{foreign_external_collection_id}}
+  mutate: false
+  required: false
+- id: GET-external-collections-operation-operationId
+  name: Passive authorization probe for /api/external-collections/operation/{operationId}
+  category: passive_probe
+  method: GET
+  path: /api/external-collections/operation/{{foreign_operation_id}}
+  mutate: false
+  required: false
