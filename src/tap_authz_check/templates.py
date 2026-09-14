@@ -44,7 +44,7 @@ def build_context(actor: ActorSnapshot, fixture: FixtureData) -> dict[str, Any]:
         if isinstance(actor.raw, dict)
         else None
     )
-    return {
+    base = {
         "actor_email": actor.email,
         "actor_name": actor.name,
         "actor_company": actor.company,
@@ -52,8 +52,13 @@ def build_context(actor: ActorSnapshot, fixture: FixtureData) -> dict[str, Any]:
         "foreign_provider_id": fixture.foreign_provider_id,
         "victim_user_id": fixture.victim_user_id,
         "victim_user_email": fixture.extra.get("victim_user_email"),
+        "foreign_obligor_id": fixture.extra.get("foreign_obligor_id"),
+        "foreign_investor_id": fixture.extra.get("foreign_investor_id"),
         "actor_clients_passthrough": actor_clients if actor_clients is not None else [],
     }
+    for key, value in fixture.extra.items():
+        base.setdefault(key, value)
+    return base
 
 
 def has_unresolved(value: Any, ctx: dict[str, Any]) -> list[str]:

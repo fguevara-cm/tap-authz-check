@@ -4,3 +4,5 @@ victim_user_id: victim-test-user@example.test
 trade_id: test-trade-id
 invoice_id: test-invoice-id
 settlement_id: test-settlement-id
+foreign_obligor_id:
+foreign_investor_id:

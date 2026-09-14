@@ -34,7 +34,7 @@ cases:
     name: Read client investors (foreign provider)
     category: horizontal_privilege
     method: GET
-    path: /api/clients/{{foreign_provider_id}}/investors
+    path: /api/clients/{{foreign_provider_id}}/investors?draw=1&requestedPage=0&pageSize=10&property=id
     mutate: false
     mark_vulnerable_if:
       status_in: [200]
@@ -45,7 +45,7 @@ cases:
     name: Client search enumeration
     category: enumeration
     method: GET
-    path: /api/clients/search?draw=1&start=0&length=10
+    path: /api/clients/search?draw=1&requestedPage=0&pageSize=10&property=id
     mutate: false
     mark_vulnerable_if:
       status_in: [200]
@@ -57,7 +57,7 @@ cases:
     name: Read client configuration - foreign provider
     category: horizontal_privilege
     method: GET
-    path: /api/configurations/getClientConfiguration?client={{foreign_provider_id}}
+    path: /api/configurations/getClientConfiguration?cli={{foreign_provider_id}}
     mutate: false
     mark_vulnerable_if:
       status_in: [200]
@@ -68,7 +68,7 @@ cases:
     name: Read client base rate - foreign provider
     category: horizontal_privilege
     method: GET
-    path: /api/configurations/getClientBaseRate?client={{foreign_provider_id}}
+    path: /api/configurations/getClientBaseRate?cli={{foreign_provider_id}}
     mutate: false
     mark_vulnerable_if:
       status_in: [200]
@@ -81,18 +81,54 @@ cases:
     method: PUT
     path: /api/configurations/provider
     mutate: true
+    headers:
+      Content-Type: application/json
     body:
-      client: "{{foreign_provider_id}}"
+      id: "6a9b4e625d10cc74131f424b"
+      clientId: "{{foreign_provider_id}}"
+      validationSat: false
+      loadCalculation: false
+      totalCapacityCalculation: "LIM"
+      calculationField: "ANA"
+      calculationVersion: "VER7"
+      monitoringSat: false
+      invoicesNotExpired: true
+      eliminateLeadingZerosInvoices: false
+      eliminateLeadingZerosObligor: false
+      additionalDaysToPurchase: 0
+      daysToCalculateDueDate: 0
+      currency: "USD"
+      isTatcSignatureDisabled: true
+      emailNotificationsEnabled: false
+      useOnlyBusinessDays: true
+      calendarCountries: ["USA","ESP","IRL","GBR"]
+      calendarTargetFields: ["MATURITY_DATE"]
+      nominationCalculationEnabled: true
+      autoPaymentConfirmationAfterDays: 5
+      reserveAdjustmentExecutionIn: "PAYMENT_EXECUTED"
+      timeZone: "America/New_York"
+      enableTreasuryProcess: true
+      docusignEnabled: false
+      autoExecuteSyndication: false
+      requireNominationConfirmation: false
+      purchaseDateStrategy: "DEFAULT"
+      requireAcknowledgeConfirmation: false
+      tapcSignatureDisabled: false
+      useLenderApprovalWorkflow: "DISABLED"
     mark_vulnerable_if:
       status_in: [200, 201, 204]
     expect_when_fixed:
       status_in: [401, 403, 404]
+    post_checks:
+      - method: GET
+        path: /api/configurations/getClientConfiguration?cli={{foreign_provider_id}}
+        assert_json: {}
 
   - id: GET-capacity-clients-investors-search-foreign
     name: Capacity investor search - foreign provider
     category: horizontal_privilege
     method: GET
-    path: /api/capacities/{{foreign_provider_id}}/investors/search
+    path: /api/capacities/{{foreign_provider_id}}/investors/search?draw=1&requestedPage=0&pageSize=10&property=id
     mutate: false
     mark_vulnerable_if:
       status_in: [200]
@@ -103,7 +139,7 @@ cases:
     name: Capacity pools search - foreign client
     category: horizontal_privilege
     method: GET
-    path: /api/capacities/clients/{{foreign_provider_id}}/pools/search
+    path: /api/capacities/clients/{{foreign_provider_id}}/pools/search?draw=1&requestedPage=0&pageSize=10&property=id
     mutate: false
     mark_vulnerable_if:
       status_in: [200]
@@ -127,22 +163,32 @@ cases:
     method: POST
     path: /api/clients/investors
     mutate: true
+    headers:
+      Content-Type: application/json
     body:
-      client: "{{foreign_provider_id}}"
-      investor: "investor-probe@example.test"
+      providerId: "{{foreign_provider_id}}"
+      investorId: "{{foreign_investor_id}}"
     mark_vulnerable_if:
       status_in: [200, 201, 204]
     expect_when_fixed:
       status_in: [401, 403, 404]
+    post_checks:
+      - method: GET
+        path: /api/clients/{{foreign_provider_id}}/investors?draw=1&requestedPage=0&pageSize=50&property=id
+        assert_json: {}
 
   - id: DELETE-obligors-id
     name: Delete obligor as non-admin
     category: vertical_privilege
     method: DELETE
-    path: /api/obligors/{{foreign_provider_id}}
+    path: /api/obligors/{{foreign_obligor_id}}
     destructive: true
     mutate: true
     mark_vulnerable_if:
       status_in: [200, 204]
     expect_when_fixed:
       status_in: [401, 403, 404]
+    post_checks:
+      - method: GET
+        path: /api/obligors/{{foreign_obligor_id}}
+        assert_json: {}
