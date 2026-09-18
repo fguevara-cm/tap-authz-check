@@ -156,7 +156,16 @@ cases:
     mutate: true
     body:
       id: "{{victim_user_email}}"
-      isAdmin: true
+      name: "{{victim_user_email}}"
+      status: ACT
+      isAdmin: false
+      hasAnalytics: false
+      onlyAnalyticsAccess: false
+      distributePaymentsAllowed: false
+      paymentInstructionsAllowed: false
+      clients:
+        - client: "{{foreign_provider_id}}"
+          role: SER
     mark_vulnerable_if:
       status_in: [200, 201, 204]
     expect_when_fixed:
