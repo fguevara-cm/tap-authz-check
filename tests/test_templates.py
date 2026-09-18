@@ -62,3 +62,15 @@ def test_has_unresolved_returns_missing_keys() -> None:
 def test_build_context_includes_clients_passthrough() -> None:
     ctx = build_context(_actor(), _fixture())
     assert ctx["actor_clients_passthrough"] == [{"client": "provider-A"}]
+
+
+def test_build_context_includes_resource_fixture_ids() -> None:
+    fixture = FixtureData(
+        trade_id="trade-1",
+        invoice_id="invoice-1",
+        settlement_id="settlement-1",
+    )
+    ctx = build_context(_actor(), fixture)
+    assert ctx["trade_id"] == "trade-1"
+    assert ctx["invoice_id"] == "invoice-1"
+    assert ctx["settlement_id"] == "settlement-1"

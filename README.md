@@ -96,6 +96,21 @@ tap-authz-check --allow-destructive --victim-user "$TEST_VICTIM_USER"
 tap-authz-check --dry-run
 ```
 
+Verificar si se solucionó, sin crear generar archivo de reporte:
+``` bash
+tap-authz-check --mode verify --only '01_*' --allow-destructive 2>&1
+```
+
+Ejecutar guardando archivo de soporte
+``` bash
+tap-authz-check --only '03_*' --allow-destructive --report reports/03_clients_and_configurations.json > reports/03_clients_and_configurations.txt 2>&1
+```
+
+Ejecutar una prueba en específico
+``` bash
+tap-authz-check --cases cases/01_user_privilege_escalation.yaml --only 'PUT-user-other-account' --mode audit
+```
+
 ## 6. Generar nuevas suites desde endpoints
 
 Para crear casos a partir de endpoints nuevos, usar el prompt reutilizable
