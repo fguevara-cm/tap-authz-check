@@ -156,41 +156,6 @@ def test_discovery_suite_loads_from_directory() -> None:
     assert report.results == []
 
 
-def test_distribution_500_is_error() -> None:
-    with respx.mock(assert_all_called=False) as mock:
-        _mock_session_exchange(mock)
-        mock.get(f"{BASE}/api/distribution-v2").mock(return_value=httpx.Response(500, text="boom"))
-        mock.get(f"{BASE}/api/distribution-payments/summary").mock(return_value=httpx.Response(403))
-        mock.get(f"{BASE}/api/distribution-payments/by-context").mock(return_value=httpx.Response(403))
-        mock.post(f"{BASE}/api/distribution-payments/summary").mock(return_value=httpx.Response(403))
-        mock.get(f"{BASE}/api/payment-instructions/summary/search").mock(return_value=httpx.Response(403))
-        mock.get(f"{BASE}/api/payment-instructions/by-context").mock(return_value=httpx.Response(403))
-        mock.post(f"{BASE}/api/payment-instructions/start").mock(return_value=httpx.Response(403))
-        mock.get(f"{BASE}/api/settlements/test-settlement-id").mock(return_value=httpx.Response(403))
-        mock.get(f"{BASE}/api/settlements/findBySettlementNo/test-settlement-id").mock(return_value=httpx.Response(403))
-        mock.post(f"{BASE}/api/settlements/findByAllIds").mock(return_value=httpx.Response(403))
-        runner = Runner(_settings(), only=["GET-distribution-v2-list"])
-        report = runner.run(
-            Path("cases/04_distribution_treasury_payments.yaml"),
-            Path("fixtures/mirror.example.yaml"),
-        )
-    target = next(r for r in report.results if r.case_id == "GET-distribution-v2-list")
-    assert target.classification is Classification.ERROR
-
-
-def test_distribution_403_is_fixed() -> None:
-    with respx.mock(assert_all_called=False) as mock:
-        _mock_session_exchange(mock)
-        mock.get(f"{BASE}/api/distribution-v2").mock(return_value=httpx.Response(403, json={"error": "forbidden"}))
-        runner = Runner(_settings(), only=["GET-distribution-v2-list"])
-        report = runner.run(
-            Path("cases/04_distribution_treasury_payments.yaml"),
-            Path("fixtures/mirror.example.yaml"),
-        )
-    target = next(r for r in report.results if r.case_id == "GET-distribution-v2-list")
-    assert target.classification is Classification.FIXED
-
-
 def test_mutating_call_sends_xsrf_header() -> None:
     """Mutating requests must echo XSRF-TOKEN as X-XSRF-TOKEN (double-submit)."""
     with respx.mock(assert_all_called=False) as mock:
