@@ -1,0 +1,385 @@
+version: 1
+suite: plan_configuraciones_02
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: POST-configurations-obligors-foreign
+    name: Create obligor configuration on foreign client as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/configurations/obligors
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      owner: "{{foreign_investor_id}}"
+      obligorId: "{{foreign_obligor_id}}"
+      bufferDays: 10
+      riskPremium: 0.05
+      advanceRate: 0.50
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-obligors-foreign
+    name: Update existing obligor configuration of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/obligors
+    mutate: true
+    body:
+      id: "{{configuration_id}}"
+      client: "{{foreign_provider_id}}"
+      owner: "{{foreign_investor_id}}"
+      obligorId: "{{foreign_obligor_id}}"
+      bufferDays: 10
+      riskPremium: 0.05
+      advanceRate: 0.50
+      administrativeDays: 15
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-obligors-bufferDays-foreign
+    name: Update buffer days of existing obligor configuration as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/obligors/bufferDays
+    mutate: true
+    body:
+      id: "{{configuration_id}}"
+      administrativeDays: 0
+      bufferDays: 10
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-configurations-obligors-obligorsWithCreatePool-foreign
+    name: Create obligor with pool on foreign client as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/configurations/obligors/obligorsWithCreatePool
+    mutate: true
+    body:
+      obligorName: "Authz Probe Obligor"
+      obligorAcronym: "APO"
+      country: "USA"
+      state: "FL"
+      city: "Miami"
+      postalCode: "33101"
+      obligorIdentifiers: "{{obligor_identifiers}}"
+      client: "{{foreign_provider_id}}"
+      owner: "{{foreign_investor_id}}"
+      bufferDays: 10
+      administrativeDays: 15
+      riskPremium: 0.05
+      advanceRate: 0.50
+      poolCurrency: "USD"
+      poolTotal: 20000000.00
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-obligors-obligorsWithSeletedPool-foreign
+    name: Update obligor with selected pool of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/obligors/obligorsWithSeletedPool
+    mutate: true
+    body:
+      obligorId: "{{foreign_obligor_id}}"
+      configurationId: "{{configuration_id}}"
+      capacityId: "{{capacity_id}}"
+      obligorName: "Authz Probe Obligor"
+      obligorAcronym: "APO"
+      country: "USA"
+      state: "FL"
+      city: "Miami"
+      postalCode: "33101"
+      obligorIdentifiers: "{{obligor_identifiers}}"
+      client: "{{foreign_provider_id}}"
+      owner: "{{foreign_investor_id}}"
+      bufferDays: 10
+      administrativeDays: 15
+      riskPremium: 0.05
+      advanceRate: 0.50
+      poolId: "{{foreign_pool_id}}"
+      obligorStatus: "ACT"
+      configurationStatus: "ACT"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-configurations-documents-supporting-foreign
+    name: Create supporting document on foreign client as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/configurations/documents/supporting
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      name: "Authz Probe Supporting Document"
+      description: "PenTest-001 authorization probe"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-tradeFees-foreign
+    name: Update trade fee of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/tradeFees
+    mutate: true
+    body:
+      - id: "{{trade_fee_id}}"
+        client: "{{foreign_provider_id}}"
+        type: "PER"
+        value: 0.06
+        period: "ANNUAL"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-provider-calculationFields-foreign
+    name: Update calculation fields of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/provider/calculationFields
+    mutate: true
+    body:
+      clientId: "{{foreign_provider_id}}"
+      loadCalculation: false
+      calculationField: "ANA"
+      calculationVersion: "VER7"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-validationSat-foreign
+    name: Toggle validationSat of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/validationSat?cli={{foreign_provider_id}}&validationSat=false
+    mutate: true
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-provider-validationFields-foreign
+    name: Update validation fields of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/provider/validationFields
+    mutate: true
+    body:
+      clientId: "{{foreign_provider_id}}"
+      validationSat: false
+      monitoringSat: false
+      invoicesNotExpired: true
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-documents-supporting-update-foreign
+    name: Update existing supporting document of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/documents/supporting
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      id: "{{document_id}}"
+      name: "Authz Probe Supporting Document"
+      description: "PenTest-001 authorization probe"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-documents-template-client-foreign
+    name: Update client document template of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/documents/template/client
+    mutate: true
+    body:
+      clientId: "{{foreign_provider_id}}"
+      id: "{{client_template_id}}"
+      name: "Authz Probe Template"
+      description: "PenTest-001 authorization probe"
+      content: "Authz probe content"
+      version: 1
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-tenor-days-general-foreign
+    name: Upsert general tenor days configuration of foreign provider as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/validations/tenor-days/general
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      minTenorDays: 0
+      maxTenorDays: 180
+      startDateField: "PURCHASE_DATE"
+      endDateField: "DUE_DATE"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-tenor-days-investors-foreign
+    name: Upsert investor tenor days configuration of foreign provider as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/validations/tenor-days/investors
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      investorId: "{{foreign_investor_id}}"
+      minTenorDays: 0
+      maxTenorDays: 180
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: DELETE-configurations-tenor-days-investors-foreign
+    name: Soft-delete investor tenor days configuration as non-admin
+    category: horizontal_privilege
+    method: DELETE
+    path: /api/configurations/validations/tenor-days/investors/{{tenor_investor_config_id}}
+    destructive: true
+    mutate: true
+    mark_vulnerable_if:
+      status_in: [200, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-configurations-tenor-days-obligors-foreign
+    name: Create obligor tenor days exception for foreign provider as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/configurations/validations/tenor-days/obligors
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      investorId: "{{foreign_investor_id}}"
+      obligorId: "{{foreign_obligor_id}}"
+      minTenorDays: 0
+      maxTenorDays: 180
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-tenor-days-obligors-id-foreign
+    name: Update obligor tenor days exception by id as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/validations/tenor-days/obligors/{{tenor_obligor_config_id}}
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      investorId: "{{foreign_investor_id}}"
+      obligorId: "{{foreign_obligor_id}}"
+      minTenorDays: 0
+      maxTenorDays: 100
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: DELETE-configurations-tenor-days-obligors-foreign
+    name: Soft-delete obligor tenor days exception as non-admin
+    category: horizontal_privilege
+    method: DELETE
+    path: /api/configurations/validations/tenor-days/obligors/{{tenor_obligor_config_id}}
+    destructive: true
+    mutate: true
+    mark_vulnerable_if:
+      status_in: [200, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-reserve-configuration-create-foreign
+    name: Create reserve configuration for foreign client as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/reserve/configuration/create
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      obligorId: "{{foreign_obligor_id}}"
+      investorId: "{{foreign_investor_id}}"
+      historicalDilution: "{{reserve_historical_dilution}}"
+      dilutionMultiplier: "{{reserve_dilution_multiplier}}"
+      permittedReserve: "{{reserve_permitted_reserve}}"
+      floorReserve: "{{reserve_floor_reserve}}"
+      upperThreshold: "{{reserve_upper_threshold}}"
+      lowerThreshold: "{{reserve_lower_threshold}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-reserve-configuration-create-for-obligors-foreign
+    name: Create reserve configuration for foreign obligors list as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/reserve/configuration/create-for-obligors
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      investorId: "{{foreign_investor_id}}"
+      obligorIds:
+        - "{{foreign_obligor_id}}"
+      historicalDilution: "{{reserve_historical_dilution}}"
+      dilutionMultiplier: "{{reserve_dilution_multiplier}}"
+      permittedReserve: "{{reserve_permitted_reserve}}"
+      floorReserve: "{{reserve_floor_reserve}}"
+      upperThreshold: "{{reserve_upper_threshold}}"
+      lowerThreshold: "{{reserve_lower_threshold}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-reserve-configuration-update-foreign
+    name: Update reserve configuration of foreign client as non-admin
+    category: horizontal_privilege
+    method: PUT
+    path: /api/reserve/configuration/update/{{reserve_configuration_id}}
+    mutate: true
+    body:
+      id: "{{reserve_configuration_id}}"
+      providerId: "{{foreign_provider_id}}"
+      obligorId: "{{foreign_obligor_id}}"
+      investorId: "{{foreign_investor_id}}"
+      historicalDilution: "{{reserve_historical_dilution}}"
+      dilutionMultiplier: "{{reserve_dilution_multiplier}}"
+      permittedReserve: "{{reserve_permitted_reserve}}"
+      floorReserve: "{{reserve_floor_reserve}}"
+      upperThreshold: "{{reserve_upper_threshold}}"
+      lowerThreshold: "{{reserve_lower_threshold}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]

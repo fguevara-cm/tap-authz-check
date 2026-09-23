@@ -1,0 +1,244 @@
+version: 1
+suite: plan_configuraciones_01
+finding: PenTest-001
+defaults:
+  auth: low_priv
+  required: true
+  headers:
+    Content-Type: application/json
+
+cases:
+  - id: POST-configurations-bankAccounts-foreign
+    name: Create bank account configuration on foreign client as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/configurations/bankAccounts
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      role: "{{role}}"
+      accountHolderName: "Holder name"
+      accountNumber: "BN123456"
+      bankName: "Bank of Test"
+      bankCountry: "USA"
+      shortName: "BT"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-bankAccounts-foreign
+    name: Update existing bank account configuration on foreign client
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/bankAccounts
+    mutate: true
+    body:
+      id: "{{bank_account_configuration_id}}"
+      client: "{{foreign_provider_id}}"
+      role: "{{role}}"
+      accountHolderName: "Holder name"
+      accountNumber: "BN123456"
+      bankName: "Bank of Test"
+      bankCountry: "{{currency}}"
+      shortName: "BT"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: DELETE-capacities-pools-foreign
+    name: Delete capacity pool of foreign obligor as non-admin
+    category: horizontal_privilege
+    method: DELETE
+    path: /api/capacities/pools/{{foreign_pool_id}}?obligorId={{foreign_obligor_id}}
+    destructive: true
+    mutate: true
+    mark_vulnerable_if:
+      status_in: [200, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-capacities-investors-foreign
+    name: Create investor capacity for foreign client as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/capacities/investors
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      owner: "{{foreign_investor_id}}"
+      type: "{{total_capacity_calculation}}"
+      currency: "{{currency}}"
+      total: "{{capacity_total}}"
+      capacityComputation: "{{capacity_calculation}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-capacities-investors-match-pool-foreign
+    name: Match investor capacity to foreign pool as non-admin
+    category: horizontal_privilege
+    method: POST
+    path: /api/capacities/investors/match-pool
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      owner: "{{foreign_investor_id}}"
+      pool: "{{foreign_pool_id}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-capacity-provider-foreign
+    name: Update provider capacity of foreign client-investor pair
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/capacity/provider
+    mutate: true
+    body:
+      investor: "{{foreign_investor_id}}"
+      client: "{{foreign_provider_id}}"
+      currency: "{{currency}}"
+      capacity: "{{capacity_provider_amount}}"
+      totalCapacityCalculation: "{{total_capacity_calculation}}"
+      capacityCalculation: "{{capacity_calculation}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-configurations-labels-saveSetting-foreign
+    name: Save client configuration label setting on foreign client
+    category: horizontal_privilege
+    method: POST
+    path: /api/configurations/labels/saveSetting
+    mutate: true
+    body:
+      client: ["{{foreign_provider_id}}"]
+      gridKey: "{{label_grid_type}}"
+      jsonLabels:
+        - title: "{{label_title}}"
+          data: "{{label_data}}"
+          name: "{{label_name}}"
+      status: "{{label_status}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-labels-updateSettings-foreign
+    name: Update existing label settings of foreign client
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/labels/updateSettings
+    mutate: true
+    body:
+      client: ["{{foreign_provider_id}}"]
+      id: ["{{label_id}}"]
+      gridKey: "{{label_grid_type}}"
+      jsonLabels:
+        - title: "{{label_title}}"
+          data: "{{label_data}}"
+          name: "{{label_name}}"
+      status: "{{label_status}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: DELETE-configurations-labels-inactiveSetting-foreign
+    name: Deactivate label settings of foreign client
+    category: horizontal_privilege
+    method: DELETE
+    path: /api/configurations/labels/inactiveSetting
+    mutate: true
+    body: ["{{label_id}}"]
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-configurations-labels-activeSetting-foreign
+    name: Reactivate label settings of foreign client
+    category: horizontal_privilege
+    method: POST
+    path: /api/configurations/labels/activeSetting
+    mutate: true
+    body: ["{{label_id}}"]
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-rates-foreign
+    name: Update rate configuration of foreign client
+    category: horizontal_privilege
+    method: PUT
+    path: /api/configurations/rates
+    mutate: true
+    body:
+      client: "{{foreign_provider_id}}"
+      id: "{{rate_configuration_id}}"
+      rateType: "{{rate_type}}"
+      rateSource: "{{rate_source}}"
+      liborMaturities: "{{rate_libor_maturities}}"
+      useSofrHistoricalDate: false
+      useSofrWeekday: false
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: PUT-configurations-retainage-reserve-actor
+    name: Update retainage reserve of own client without admin role
+    category: vertical_privilege
+    method: PUT
+    path: /api/configurations/{{foreign_provider_id}}/retainage-reserve
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      retainageEnabled: "{{retainage_enabled}}"
+      assetsRetainageBasis: "{{retainage_basis}}"
+      retainageAmountSourceType: "{{retainage_amount_source_type}}"
+      portfolioRetainagePercentage: "{{retainage_percentage}}"
+      assetsSelectionStrategy: "{{retainage_strategy}}"
+      releaseRetainageCashOnApproval: "{{release_retainage_cash_on_approval}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-configurations-retainage-reserve-actor
+    name: Create retainage reserve for own client without admin role
+    category: vertical_privilege
+    method: POST
+    path: /api/configurations/{{foreign_provider_id}}/retainage-reserve
+    mutate: true
+    body:
+      providerId: "{{foreign_provider_id}}"
+      retainageEnabled: "{{retainage_enabled}}"
+      assetsRetainageBasis: "{{retainage_basis}}"
+      retainageAmountSourceType: "{{retainage_amount_source_type}}"
+      portfolioRetainagePercentage: "{{retainage_percentage}}"
+      assetsSelectionStrategy: "{{retainage_strategy}}"
+      releaseRetainageCashOnApproval: "{{release_retainage_cash_on_approval}}"
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+
+  - id: POST-user-update-role-client-actor
+    name: Change own active role within own client without admin
+    category: vertical_privilege
+    method: POST
+    path: /api/user/update-role/client/{{foreign_provider_id}}/role/{{role}}
+    mutate: true
+    mark_vulnerable_if:
+      status_in: [200, 201, 204]
+    expect_when_fixed:
+      status_in: [401, 403]
+    cleanup:
+      strategy: restore_user_snapshot

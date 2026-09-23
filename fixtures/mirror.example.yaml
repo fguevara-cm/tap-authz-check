@@ -1,53 +1,57 @@
 environment: mirror
-foreign_provider_id: provider-not-assigned-to-test-user
 victim_user_id: victim-test-user@example.test
 victim_user_email: victim-test-user@example.test
+
+foreign_provider_id: provider-not-assigned-to-test-user
+foreign_obligor_id: obligor-not-assigned-to-test-user
+foreign_investor_id: investor-not-assigned-to-test-user
+
+currency: USD
 trade_id: test-trade-id
 invoice_id: test-invoice-id
 settlement_id: test-settlement-id
-foreign_client_id: null
-foreign_holding_id: null
-foreign_child_provider_id: null
-foreign_pool_id: null
-foreign_capacity_id: null
-foreign_obligor_id: null
-foreign_investor_id: null
-foreign_adjustment_id: null
-foreign_adjustment_settlement_id: null
-foreign_deal_id: null
-foreign_file_id: null
-foreign_document_template_id: null
-foreign_label_setting_id: null
-foreign_batch_id: null
-foreign_nomination_id: null
-foreign_nomination_draft_id: null
-foreign_invoice_trade_id: null
-foreign_operation_id: null
-foreign_payment_instruction_id: null
-foreign_payment_release_id: null
-foreign_external_collection_id: null
-foreign_past_due_fee_total_id: null
-foreign_reserve_configuration_id: null
-foreign_reserve_release_id: null
-foreign_retainage_adjustment_id: null
-foreign_sat_batch_id: null
-foreign_sat_seek_id: null
-foreign_payee_id: null
-foreign_parent_id: null
-foreign_tenant_id: null
-foreign_quicksight_report_id: null
-foreign_distribution_id: null
-foreign_trade_rejection_id: null
-foreign_owner: null
-trade_no: null
-invoice_number: null
-release_no: null
-payee_short_name: null
-role: null
-type: null
-adjustment_type: null
-context_type: null
-process_status: null
-settlement_status: null
-filter: null
-file_type: null
+role: SER
+
+bank_account_configuration_id: test-bank-configuration-id
+
+capacity_provider_amount: 10000000.00
+capacity_total: 20000000.00
+total_capacity_calculation: LIM
+capacity_calculation: NET
+capacity_id: <capacity del par obligor/investor>
+foreign_pool_id: test-pool-id
+
+label_id: test-label-id
+label_grid_type: TRA
+label_title: test-fileName
+label_data: Test File Name
+label_name: test-fileName
+label_status: ACT
+
+rate_configuration_id: test-rate-configuration-id
+rate_type: SOFR
+rate_source: API
+rate_libor_maturities: [ONE_MONTH, SIX_MONTHS]
+
+retainage_enabled: false
+retainage_basis: NET_AMOUNT
+retainage_amount_source_type: CONFIGURED_PERCENTAGE
+retainage_percentage: 10
+retainage_strategy: LOWEST_AMOUNT
+release_retainage_cash_on_approval: false
+
+configuration_id: <id de Configuration existente>
+obligor_identifiers: ["<formato real demostrado>"]
+trade_fee_id: <tradeFee existente del foreign client>
+document_id: <supporting document existente>
+client_template_id: <template de client existente>
+tenor_investor_config_id: <fila Provider+Investor ACT>
+tenor_obligor_config_id: <fila Provider+Investor+Obligor>
+
+reserve_configuration_id: <reserve config existente>
+reserve_historical_dilution: <decimal>
+reserve_dilution_multiplier: <decimal>
+reserve_permitted_reserve: <decimal>
+reserve_floor_reserve: <decimal>
+reserve_upper_threshold: <decimal>
+reserve_lower_threshold: <decimal>
