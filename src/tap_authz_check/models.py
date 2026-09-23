@@ -56,7 +56,7 @@ class TestCase(BaseModel):
     method: str
     path: str
     headers: dict[str, str] = Field(default_factory=dict)
-    body: dict[str, Any] | None = None
+    body: dict[str, Any] | list[Any] | None = None
     mutate: bool = False
     destructive: bool = False
     mark_vulnerable_if: Expectation = Field(default_factory=Expectation)

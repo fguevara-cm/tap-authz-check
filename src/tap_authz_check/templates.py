@@ -8,6 +8,7 @@ from typing import Any
 from .models import ActorSnapshot, FixtureData
 
 _PLACEHOLDER = re.compile(r"\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}")
+_FULL_PLACEHOLDER = re.compile(r"^\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}$")
 
 
 class MissingPlaceholder(ValueError):
@@ -30,6 +31,12 @@ def render_string(value: str, ctx: dict[str, Any]) -> str:
 
 def render_value(value: Any, ctx: dict[str, Any]) -> Any:
     if isinstance(value, str):
+        full = _FULL_PLACEHOLDER.match(value)
+        if full:
+            key = full.group(1)
+            if key not in ctx or ctx[key] in (None, ""):
+                raise MissingPlaceholder(key)
+            return ctx[key]
         return render_string(value, ctx)
     if isinstance(value, list):
         return [render_value(item, ctx) for item in value]

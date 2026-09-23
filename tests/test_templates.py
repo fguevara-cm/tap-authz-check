@@ -74,3 +74,24 @@ def test_build_context_includes_resource_fixture_ids() -> None:
     assert ctx["trade_id"] == "trade-1"
     assert ctx["invoice_id"] == "invoice-1"
     assert ctx["settlement_id"] == "settlement-1"
+
+
+def test_render_value_preserves_native_type_for_full_placeholder() -> None:
+    fixture = FixtureData(
+        extra={
+            "capacity_total": 20000000,
+            "retainage_enabled": True,
+            "rate_libor_maturities": ["ONE_WEEK", "TWO_MONTHS"],
+        }
+    )
+    ctx = build_context(_actor(), fixture)
+    assert render_value("{{capacity_total}}", ctx) == 20000000
+    assert render_value("{{retainage_enabled}}", ctx) is True
+    assert render_value("{{rate_libor_maturities}}", ctx) == ["ONE_WEEK", "TWO_MONTHS"]
+    assert render_value("prefix-{{capacity_total}}", ctx) == "prefix-20000000"
+
+
+def test_render_value_full_placeholder_missing_raises() -> None:
+    ctx = build_context(_actor(), FixtureData())
+    with pytest.raises(MissingPlaceholder):
+        render_value("{{capacity_total}}", ctx)
